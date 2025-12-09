@@ -1,0 +1,23 @@
+{
+  "name": "tg-tictactoe-webapp",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 5173",
+    "tunnel": "node scripts/ngrok.mjs",
+    "dev:tunnel": "concurrently -n APP,NGROK -c \"auto\" \"vite\" \"node scripts/ngrok.mjs\""
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.2",
+    "concurrently": "^8.2.2",
+    "ngrok": "^4.3.3",
+    "vite": "^5.4.10"
+  }
+}
