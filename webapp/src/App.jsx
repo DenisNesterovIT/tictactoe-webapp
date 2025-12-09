@@ -37,8 +37,17 @@ function minimax(board, isMax) {
   return best
 }
 
+function randomEmptyIndex(board) {
+  const empty = board.map((v,i)=>v?null:i).filter(v=>v!==null)
+  if (!empty.length) return -1
+  return empty[Math.floor(Math.random()*empty.length)]
+}
+
 function bestMove(board) {
-  // Try to win fast; if multiple, pick first
+  const randomness = 0.4
+  if (Math.random() < randomness) {
+    return randomEmptyIndex(board)
+  }
   return minimax([...board], true).index
 }
 
@@ -95,10 +104,10 @@ export default function App() {
       const code = generatePromo()
       setPromo(code)
       tg.HapticFeedback?.notificationOccurred?.('success')
-      try { tg.sendData?.(JSON.stringify({ type: 'win', code })) } catch {}
+      try { tg.sendData?.(JSON.stringify({ type: 'win', code })) } catch (e) { console.error('sendData win error', e) }
     } else if (r === 'O') {
       tg.HapticFeedback?.notificationOccurred?.('error')
-      try { tg.sendData?.(JSON.stringify({ type: 'loss' })) } catch {}
+      try { tg.sendData?.(JSON.stringify({ type: 'loss' })) } catch (e) { console.error('sendData loss error', e) }
     } else {
       tg.HapticFeedback?.notificationOccurred?.('warning')
     }

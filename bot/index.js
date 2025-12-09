@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { Telegraf, Markup } from 'telegraf'
+import { message } from 'telegraf/filters'
 
 const token = process.env.BOT_TOKEN
 const webAppUrl = process.env.WEBAPP_URL
@@ -33,12 +34,30 @@ bot.start((ctx) => {
   return ctx.reply('Добро пожаловать! Чтобы появилась кнопка, укажите HTTPS‑ссылку WEBAPP_URL (ngrok/деплой) и перезапустите бота.')
 })
 
+bot.on(message('web_app_data'), async (ctx) => {
+  try {
+    const data = JSON.parse(ctx.message.web_app_data.data || '{}')
+    console.log('web_app_data:', data)
+    if (data.type === 'win' && data.code) {
+      await ctx.reply(`Победа! Промокод выдан: ${data.code}`)
+    } else if (data.type === 'loss') {
+      await ctx.reply('Проигрыш')
+    } else {
+      await ctx.reply('Данные получены')
+    }
+  } catch (e) {
+    console.error('web_app_data parse error:', e)
+    await ctx.reply('Не удалось обработать данные от мини‑приложения.')
+  }
+})
+
 // Receive data from Mini App
 bot.on('message', async (ctx) => {
   const wa = ctx.message?.web_app_data
   if (wa?.data) {
     try {
       const data = JSON.parse(wa.data)
+      console.log('web_app_data(message):', data)
       if (data.type === 'win' && data.code) {
         await ctx.reply(`Победа! Промокод выдан: ${data.code}`)
       } else if (data.type === 'loss') {
@@ -47,6 +66,7 @@ bot.on('message', async (ctx) => {
         await ctx.reply('Данные получены')
       }
     } catch (e) {
+      console.error('parse error(message):', e)
       await ctx.reply('Не удалось обработать данные от мини‑приложения.')
     }
   }
