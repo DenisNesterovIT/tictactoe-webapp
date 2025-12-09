@@ -2,7 +2,7 @@
 
 Структура:
 - `webapp/` — React мини‑приложение (Telegram WebApp).
-- `bot/` — Telegram‑бот на Telegraf, принимает `web_app_data` и отправляет сообщения.
+- `bot_py/` — Telegram-бот на python-telegram-bot 20 (Python 3.11+).
 
 ## Быстрый старт
 
@@ -12,13 +12,20 @@
 - `npm run dev`
 - Для реального открытия в Telegram нужен HTTPS‑хостинг (например, Vercel/Netlify) или туннель (ngrok). После деплоя получите URL.
 
-2) Бот
-- Перейдите в `tg-tictactoe/bot`
-- Скопируйте `.env.example` в `.env`
-- Установите `BOT_TOKEN` (от @BotFather)
-- Установите `WEBAPP_URL` — URL деплоенного веб‑приложения
-- `npm install`
-- `npm run start`
+2) Бот (Python)
+- Перейдите в `tg-tictactoe/bot_py`
+- Скопируйте `.env.example` в `.env` **или** создайте `.env` с переменными:
+  ```
+  BOT_TOKEN=<токен от BotFather>
+  WEBAPP_URL=https://your-webapp-url
+  ```
+- Python 3.11 или 3.12:
+  ```bash
+  python3.12 -m venv venv
+  source venv/bin/activate
+  pip install -r requirements.txt
+  python main.py
+  ```
 
 Откройте бот в Telegram, нажмите /start — появится кнопка «Играть». Мини‑приложение отправляет результат через `Telegram.WebApp.sendData`:
 - Победа: бот пишет «Победа! Промокод выдан: [код]»

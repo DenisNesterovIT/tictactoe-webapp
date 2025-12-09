@@ -1,0 +1,12 @@
+# Python bot local files to ignore
+venv/
+__pycache__/
+*.py[cod]
+.env
+# IDE
+.idea/
+.vscode/
+# Logs
+*.log
+# OS
+.DS_Store

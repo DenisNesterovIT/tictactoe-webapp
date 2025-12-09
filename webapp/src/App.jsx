@@ -62,6 +62,7 @@ export default function App() {
   const [result, setResult] = useState(null) // 'X' | 'O' | 'draw' | null
   const [promo, setPromo] = useState(null)
   const aiTimer = useRef(null)
+  const sentRef = useRef(false)
 
   useEffect(() => {
     tg.ready?.()
@@ -104,12 +105,24 @@ export default function App() {
       const code = generatePromo()
       setPromo(code)
       tg.HapticFeedback?.notificationOccurred?.('success')
-      try { tg.sendData?.(JSON.stringify({ type: 'win', code })) } catch (e) { console.error('sendData win error', e) }
     } else if (r === 'O') {
       tg.HapticFeedback?.notificationOccurred?.('error')
-      try { tg.sendData?.(JSON.stringify({ type: 'loss' })) } catch (e) { console.error('sendData loss error', e) }
     } else {
       tg.HapticFeedback?.notificationOccurred?.('warning')
+    }
+  }
+
+  function sendToBot() {
+    if (sentRef.current || !result) return
+    try {
+      if (result === 'X') {
+        tg.sendData?.(JSON.stringify({ type: 'win', code: promo }))
+      } else if (result === 'O') {
+        tg.sendData?.(JSON.stringify({ type: 'loss' }))
+      }
+      sentRef.current = true
+    } catch (e) {
+      console.error('sendData error', e)
     }
   }
 
@@ -118,6 +131,7 @@ export default function App() {
     setTurn('X')
     setResult(null)
     setPromo(null)
+    sentRef.current = false
   }
 
   const status = result
@@ -163,16 +177,20 @@ export default function App() {
                 <div className="promo" onClick={() => navigator.clipboard?.writeText(promo || '')}>{promo}</div>
                 <div className="modal-actions">
                   <button className="btn primary" onClick={() => navigator.clipboard?.writeText(promo || '')}>Скопировать</button>
+                  <button className="btn" onClick={sendToBot}>Отправить в чат</button>
                   <button className="btn" onClick={reset}>Сыграть ещё</button>
                 </div>
+                <p className="muted" style={{marginTop: 8}}>После отправки мини‑приложение может закрыться.</p>
               </>
             ) : result === 'O' ? (
               <>
                 <h2 className="loss">Увы, вы проиграли</h2>
                 <p className="muted">Ничего, в следующий раз повезёт</p>
                 <div className="modal-actions">
+                  <button className="btn" onClick={sendToBot}>Отправить в чат</button>
                   <button className="btn primary" onClick={reset}>Попробовать снова</button>
                 </div>
+                <p className="muted" style={{marginTop: 8}}>После отправки мини‑приложение может закрыться.</p>
               </>
             ) : (
               <>
